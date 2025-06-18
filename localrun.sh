@@ -1,0 +1,1 @@
+source ./scripts/fastapi_run_local
