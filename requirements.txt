@@ -1,6 +1,12 @@
 fastapi
 uvicorn
+sqlalchemy
 google-genai
 google-cloud-bigquery
 google-cloud-translate
 gunicorn
+pydantic
+pytz
+aioboto3
+boto3
+pyjwt
