@@ -23,7 +23,7 @@ async def slack_noti(txt):
     curl -X POST -H 'Content-type: application/json' --data '{"text":"Hello, World!"}' https://hooks.slack.com/services/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
     """
     response = await noti_client.post(
-        suffix="/T05RWBW4VUK/B0885365M0E/kmZYuYFEjkVRrXPlxw6yH4Qw",
+        suffix="/T05RWBW4VUK/B092SSG2YRW/R3vxxVWzgAEuqAanLXFlXdu1",
         json={"text": txt},
         ssl=ssl_context,
     )
