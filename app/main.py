@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from app.libs.database import destroy_engine, setup_engine
+from app.models import destroy_engine, setup_engine
 from app.route.user import user_router
 
 
@@ -24,7 +24,7 @@ app.include_router(user_router.router)
 
 @app.get("/")
 def root():
-    return {"message": "Quiz Generator SPINX"}
+    return {"message": "Quiz Generator SPHINX"}
 
 @app.get("/home")
 def home():

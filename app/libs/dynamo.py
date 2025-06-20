@@ -3,7 +3,6 @@ from functools import wraps
 
 import aioboto3
 import boto3
-from boto3.dynamodb.conditions import Key
 from botocore.config import Config
 from fastapi import HTTPException
 
@@ -56,23 +55,9 @@ class DynamoDBClient:
         else:
             return None
 
-    @classmethod
-    def get_chat_messages(cls, table_name: str, persona_id: int):
-        table = cls.table(table_name)
-        response = table.query(
-            KeyConditionExpression=Key("persona_id").eq(persona_id)
-            # & Key('timestamp').between(start_timestamp, end_timestamp)
-        )
-        return response["Items"]
 
     @classmethod
     def delete_item(cls, table_name: str, key: dict):
-        """
-        key = {
-            'chat_id': 'chat123',
-            'timestamp': 1627891234
-        }
-        """
         table = cls.table(table_name)
         response = table.delete_item(Key=key)
         return response

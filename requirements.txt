@@ -10,3 +10,6 @@ pytz
 aioboto3
 boto3
 pyjwt
+jinja2
+aiomysql
+greenlet
