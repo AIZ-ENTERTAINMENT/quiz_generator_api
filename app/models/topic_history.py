@@ -6,6 +6,6 @@ from app.models.base import BaseORM
 class TopicHistoryORM(BaseORM):
     __tablename__ = "topic_history"
     topic_history_id = Column(Integer, primary_key=True)
-    topic = Column(String)
+    topic = Column(String(100))
     sub_topic = Column(JSON)
     related_topic = Column(JSON)

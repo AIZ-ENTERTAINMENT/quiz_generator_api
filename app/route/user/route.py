@@ -20,7 +20,6 @@ router = get_router("user")
 async def create_user(req: CreateUserRequest) -> SuccessResponse:
     decoded_token: dict = jwt.decode(req.token, SECRET_KEY, algorithms=[ALGORITHM])
     user = await service.create_user(
-        age=req.age,
         name=req.name,
         email=decoded_token["email"],
     )
