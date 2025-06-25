@@ -490,8 +490,6 @@ GOOGLE_TREND_QUERY = """
     country_code = 'KR'
     AND refresh_date = '{date}'
   """
-  
-GCP_PROJECT_ID = "hale-skill-461701-h4"
 
 GCP_ACCOUNT_CREDENTIALS = {
     "type": "service_account",
