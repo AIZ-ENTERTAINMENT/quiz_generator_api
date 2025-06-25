@@ -2,6 +2,7 @@
 
 import ast
 import asyncio
+import os
 import random
 from datetime import datetime, timedelta
 
@@ -14,7 +15,7 @@ from app.libs.gemini_client import (calculate_gemini_cost, gemini_search,
                                     gemini_structed, model_dumps)
 from app.libs.llm_parameter import (BEGINNER_TOPIC_CURATION_PROMPT,
                                     BEGINNER_TOPIC_CURATION_RESPONSE_FORMAT,
-                                    GCP_ACCOUNT_CREDENTIALS, GCP_PROJECT_ID,
+                                    GCP_ACCOUNT_CREDENTIALS,
                                     GOOGLE_TREND_QUERY,
                                     KEYWORD_RECOMMENDATION_FORMAT,
                                     KEYWORD_RECOMMENDATION_PROMPT,
@@ -81,8 +82,9 @@ async def get_google_trend(session=None):
     return topic
 
 def get_keywords_google_trends(date : str):
+  gcp_project_id = os.environ.get("GCP_PROJECT_ID")
   credentials = service_account.Credentials.from_service_account_info(GCP_ACCOUNT_CREDENTIALS)
-  client = bigquery.Client(project=GCP_PROJECT_ID, credentials=credentials)
+  client = bigquery.Client(project=gcp_project_id, credentials=credentials)
   sql = GOOGLE_TREND_QUERY.format(date=date)
   job = client.query(sql)
   rows = job.result()
