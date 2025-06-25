@@ -9,3 +9,4 @@ class TopicHistoryORM(BaseORM):
     topic = Column(String(100))
     sub_topic = Column(JSON)
     related_topic = Column(JSON)
+    difficulty = Column(String(10))

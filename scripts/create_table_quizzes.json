@@ -1,0 +1,27 @@
+{
+  "TableName": "quizzes",
+  "KeySchema": [
+    {
+      "AttributeName": "quiz_set_id",
+      "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "quiz_number",
+      "KeyType": "RANGE"
+    }
+  ],
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "quiz_set_id",
+      "AttributeType": "N"
+    },
+    {
+      "AttributeName": "quiz_number",
+      "AttributeType": "N"
+    }
+  ],
+  "ProvisionedThroughput": {
+    "ReadCapacityUnits": 1,
+    "WriteCapacityUnits": 1
+  }
+}

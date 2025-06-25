@@ -5,10 +5,12 @@ from app.models.prompt import PromptORM
 
 
 @with_session
-async def create_prompt(prompt_content: str, session=None):
+async def create_prompt(prompt_name: str, prompt_content: str, session=None):
     "create prompt"
     try :
+        print("orm 직전")
         return await PromptORM.create(
+            prompt_name=prompt_name,
             prompt_content=prompt_content,
             session=session,
         )
@@ -26,7 +28,7 @@ async def get_prompt(prompt_id: int, session=None):
     return prompt
 
 @with_session
-async def update_prompt(prompt_id: int, prompt_content: str, session=None):
+async def update_prompt(prompt_id: int, prompt_name: str, prompt_content: str, session=None):
     "update prompt"
     prompt = await PromptORM.get(
         prompt_id=prompt_id, session=session
@@ -36,6 +38,7 @@ async def update_prompt(prompt_id: int, prompt_content: str, session=None):
     
     await prompt.update_by_dict(
         data={
+            "prompt_name": prompt_name,
             "prompt_content": prompt_content
         },
         session=session,

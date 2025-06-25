@@ -16,8 +16,9 @@ from fastapi.responses import JSONResponse
 from app.libs import sample_logger
 from app.models import destroy_engine, setup_engine
 from app.route.prompt import prompt_router
+from app.route.quiz import quiz_router
 from app.route.quiz_set import quiz_set_router
-from app.route.topic_history import topic_history_router
+from app.route.topic import topic_router
 from app.route.user import user_router
 
 
@@ -44,11 +45,12 @@ app = FastAPI(
 )
 
 dictConfig(sample_logger)
-
 app.include_router(user_router.router)
+app.include_router(quiz_router.router)
+app.include_router(topic_router.router)
 app.include_router(prompt_router.router)
 app.include_router(quiz_set_router.router)
-app.include_router(topic_history_router.router)
+
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):

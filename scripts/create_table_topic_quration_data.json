@@ -1,0 +1,27 @@
+{
+  "TableName": "topic_quration_data",
+  "KeySchema": [
+    {
+      "AttributeName": "topic_history_id",
+      "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "created_at",
+      "KeyType": "RANGE"
+    }
+  ],
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "topic_history_id",
+      "AttributeType": "N"
+    },
+    {
+      "AttributeName": "created_at",
+      "AttributeType": "S"
+    }
+  ],
+  "ProvisionedThroughput": {
+    "ReadCapacityUnits": 1,
+    "WriteCapacityUnits": 1
+  }
+}
