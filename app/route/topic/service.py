@@ -9,13 +9,17 @@ from datetime import datetime, timedelta
 from fastapi import HTTPException
 from google.cloud import bigquery
 from google.oauth2 import service_account
+from jinja2 import Template
 
 from app.libs.database import with_session
 from app.libs.gemini_client import (calculate_gemini_cost, gemini_search,
                                     gemini_structed, model_dumps)
-from app.libs.llm_parameter import (BEGINNER_TOPIC_CURATION_PROMPT,
+from app.libs.llm_parameter import (BEGINNER_RELATED_KEYWORD_RESPONSE_FORMAT,
+                                    BEGINNER_RELATED_KEYWORD_SYSTEM_PROMPT,
+                                    BEGINNER_RELATED_KEYWORD_USER_MSG,
+                                    BEGINNER_TOPIC_CURATION_PROMPT,
                                     BEGINNER_TOPIC_CURATION_RESPONSE_FORMAT,
-                                    GCP_ACCOUNT_CREDENTIALS,
+                                    FIXED_TOPICS, GCP_ACCOUNT_CREDENTIALS,
                                     GOOGLE_TREND_QUERY,
                                     KEYWORD_RECOMMENDATION_FORMAT,
                                     KEYWORD_RECOMMENDATION_PROMPT,
@@ -146,8 +150,7 @@ async def create_challenger_topic(topic : str):
                            "related_topics": related_topics,}
                            )
     history_dict[topic]["cost"].update({"sub_topic": sub_topic_total_cost, "related_topics": related_topic_total_cost})
-    
-    challenger_history_dict = history_dict
+
     res = {
         "history_dict" : history_dict,
         "topic_history_list" : [[str(i+1), t] for i, t in enumerate(history_dict.keys())],
@@ -236,7 +239,8 @@ async def create_beginner_topic(begginer_topic):
     history_dict[begginer_topic] = response.parsed
     history_dict[begginer_topic]["cost"] = {"sub_topic": topic_curation_total_cost}
     
-    begginer_history_dict = history_dict
+    related_topics, history_dict = await create_related_begginer_topic(begginer_topic, history_dict)
+    
     res = {
         # 백엔드에서 현재 미사용
         # "gemini_response" : response.parsed,
@@ -245,3 +249,29 @@ async def create_beginner_topic(begginer_topic):
         "checkbox_sub_topics" : [t["quiz_topic"] for t in response.parsed["topic_group"]]
     }
     return res
+
+async def create_related_begginer_topic(begginer_topic, begginer_topic_curation_history_dict):
+    
+    topic_system_prompt = BEGINNER_RELATED_KEYWORD_SYSTEM_PROMPT
+    topic_response_format = BEGINNER_RELATED_KEYWORD_RESPONSE_FORMAT
+    topic_curation_result = begginer_topic_curation_history_dict[begginer_topic]
+    user_msg = BEGINNER_RELATED_KEYWORD_USER_MSG
+    # 템플릿
+    system_prompt_template = Template(topic_system_prompt)
+    user_msg_template = Template(user_msg)
+
+    # 데이터
+    user_msg_data = {'topic_curation': topic_curation_result}
+    system_prompt_data = {}
+
+    # 렌더링: 템플릿에 데이터를 삽입하여 최종 HTML 생성
+    user_msg = user_msg_template.render(user_msg_data)
+    system_prompt = system_prompt_template.render(system_prompt_data)
+    
+    response = await gemini_structed(system_prompt, ast.literal_eval(topic_response_format), user_msg, max_output_tokens=5000, thought=False, thinking_budget=None)
+    related_topics = [[t["subject"]] for t in response.parsed["related_subjects"]] + [[t] for t in FIXED_TOPICS]
+    total_cost = calculate_gemini_cost(response.usage_metadata, search_queries=[])
+    begginer_topic_curation_history_dict[begginer_topic]["cost"]["related_topic"] = total_cost
+    begginer_topic_curation_history_dict[begginer_topic]["related_topics"] = related_topics
+
+    return related_topics, begginer_topic_curation_history_dict
